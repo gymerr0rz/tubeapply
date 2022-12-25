@@ -1,56 +1,34 @@
 const express = require('express');
 const app = express.Router();
-const ytdl = require('ytdl-core');
+const scdl = require('soundcloud-downloader').default;
 const fs = require('fs');
 
-async function downloadMP3(url) {
-  const video = ytdl(url, {
-    filter: 'audioonly',
-  });
+function downloadSingleFile(url) {
+  scdl
+    .download(url)
+    .then((stream) => stream.pipe(fs.createWriteStream('song.mp3')));
+}
 
-  video.pipe(fs.createWriteStream('video.mp3'));
-
-  video.on('error', (error) => {
-    console.error(error);
-  });
-
-  video.on('end', () => {
-    console.log('Finished downloading song');
+async function downloadPlaylist(url) {
+  await scdl.downloadPlaylist(url, '/playlist/', (error, track) => {
+    if (error) {
+      console.error(error);
+    } else {
+      console.log(`Downloading track: ${track.title}`);
+      console.log(`Artist: ${track.artist}`);
+      console.log(`Duration: ${track.duration} seconds`);
+    }
   });
 }
 
-async function downloadMP4(url, info) {
-  const video = ytdl(url, {
-    filter: 'videoandaudio',
-  });
-
-  const renderInfo = await ytdl.getBasicInfo(url);
-  info.push(renderInfo.videoDetails);
-
-  video.pipe(fs.createWriteStream(`${renderInfo.videoDetails.title}.mp4`));
-
-  video.on('error', (error) => {
-    console.error(error);
-  });
-
-  video.on('end', () => {
-    console.log('Finished downloading video');
-  });
-}
-
-app.post('/getVideo', async (req, res) => {
+app.post('/getSingleFile', async (req, res) => {
   const { url } = req.body;
-  const videoInfo = [];
-  await downloadMP4(url, videoInfo);
-
-  setTimeout(() => {
-    res.send(videoInfo);
-  }, 5000);
+  await downloadSingleFile(url);
 });
 
-app.post('/getSong', async (req, res) => {
+app.post('/getPlaylist', async (req, res) => {
   const { url } = req.body;
-  await downloadMP3(url);
+  await downloadPlaylist(url);
 });
 
 module.exports = app;
