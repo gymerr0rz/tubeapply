@@ -36,6 +36,52 @@ const HomeContainer = styled.div`
     margin: 8px;
     font-size: 15px;
   }
+
+  .song {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 788px;
+    height: 341px;
+    border-radius: 20px;
+    margin: 20px 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    h1 {
+      color: #fff;
+      font-family: 'Karla';
+      font-size: 12px;
+    }
+    .file-image {
+      background-color: rgba(0, 0, 0, 0.5);
+      width: 369px;
+      height: 341px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      border-radius: 20px;
+      img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        filter: blur(20px);
+        z-index: -99;
+      }
+      h1 {
+        padding: 20px;
+        font-size: 1rem;
+        z-index: 99;
+        font-family: 'Karla';
+        text-align: center;
+      }
+    }
+    .download-file {
+      width: 421px;
+      height: 341px;
+    }
+  }
 `;
 
 const Logo = styled.img`

@@ -3,10 +3,21 @@ const app = express.Router();
 const scdl = require('soundcloud-downloader').default;
 const fs = require('fs');
 
+// Only downloads single file
 function downloadSingleFile(url) {
-  scdl
-    .download(url)
-    .then((stream) => stream.pipe(fs.createWriteStream('song.mp3')));
+  const trackInfo = [];
+  // Get info about the song via URL
+  scdl.getInfo(url).then((data) => trackInfo.push(data));
+
+  // Downloads the song
+  function downloadSong(name) {
+    scdl.download(url).then((stream) => {
+      console.log('Downloading ' + name + ' ...');
+      stream.pipe(fs.createWriteStream(name + '.mp3'));
+    });
+  }
+
+  return trackInfo;
 }
 
 async function downloadPlaylist(url) {
@@ -21,9 +32,10 @@ async function downloadPlaylist(url) {
   });
 }
 
-app.post('/getSingleFile', async (req, res) => {
+app.post('/getSingleFile', (req, res) => {
   const { url } = req.body;
-  await downloadSingleFile(url);
+  const trackInfo = downloadSingleFile(url);
+  setTimeout(() => res.send(trackInfo), 2000);
 });
 
 app.post('/getPlaylist', async (req, res) => {
