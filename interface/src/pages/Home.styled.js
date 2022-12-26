@@ -80,6 +80,26 @@ const HomeContainer = styled.div`
     .download-file {
       width: 421px;
       height: 341px;
+      position: relative;
+      .downloadBtn {
+        position: absolute;
+        border: none;
+        border-radius: 20px;
+        background-color: rgba(0, 0, 0, 0.4);
+        color: #fff;
+        padding: 35px 50px;
+        font-family: 'Karla';
+        top: 50%;
+        font-weight: 900;
+        left: 50%;
+        cursor: pointer;
+        transform: translate(-50%, -50%);
+        transition: background-color 0.2s ease;
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.2);
+          transition: background-color 0.2s ease;
+        }
+      }
     }
   }
 `;

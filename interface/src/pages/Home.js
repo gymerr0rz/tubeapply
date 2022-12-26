@@ -4,7 +4,7 @@ import { ChooseSite, HomeContainer, InputBox, Logo } from './Home.styled';
 import axios from 'axios';
 export default class Home extends Component {
   getLink() {
-    function createSong(data) {
+    function createSong(data, url, source) {
       // Left Side
       const song = document.createElement('div');
       song.classList.add('song');
@@ -18,9 +18,22 @@ export default class Home extends Component {
       const downloadContainer = document.createElement('div');
       downloadContainer.classList.add('download-file');
 
+      const mp3 = document.createElement('h1');
+      mp3.innerText = 'MP3';
+
+      const button = document.createElement('button');
+      button.innerText = 'DOWNLOAD';
+      button.classList.add('downloadBtn');
+      // Download Button "ON CLICK"
+      button.addEventListener('click', () => {
+        axios.post('http://localhost:4000/' + source + '/downloadSingleFile', {
+          url: url,
+        });
+      });
       // Append
       const root = document.querySelector('.container');
       imgText.append(title, img);
+      downloadContainer.append(button);
       song.append(imgText, downloadContainer);
       root.append(song);
     }
@@ -36,7 +49,7 @@ export default class Home extends Component {
           })
           .then((data) => {
             const info = data.data[0];
-            createSong(info);
+            createSong(info, url, buttonInnerText);
           });
       }
     });
