@@ -38,6 +38,7 @@ export default class Home extends Component {
       root.append(song);
     }
 
+    // Getting the button clicked on value then @POST the value to the back-endpoint and creating files on a local machine.
     const buttons = document.querySelector('.buttonDiv').childNodes;
     const url = document.querySelector('.inputURL').value;
     buttons.forEach((button) => {
@@ -55,6 +56,7 @@ export default class Home extends Component {
     });
   }
 
+  // Finds out which button is clicked on.
   whichButtonClicked(e) {
     const buttons = document.querySelector('.buttonDiv').childNodes;
     const target = e.target;
@@ -67,6 +69,7 @@ export default class Home extends Component {
     });
   }
 
+  // Default Render
   render() {
     return (
       <HomeContainer className="container">

@@ -2,6 +2,7 @@ const express = require('express');
 const app = express.Router();
 const scdl = require('soundcloud-downloader').default;
 const fs = require('fs');
+const path = require('path');
 
 // Check how many songs directory has
 function checkDir() {
@@ -9,7 +10,6 @@ function checkDir() {
   if (dir === []) {
     return 0;
   }
-  console.log(dir.length);
   return dir.length + 1;
 }
 
@@ -20,6 +20,8 @@ function downloadSong(url) {
   scdl.download(url).then((stream) => {
     stream.pipe(fs.createWriteStream('./songs/' + fileNumber + '.mp3'));
   });
+
+  return fileNumber;
 }
 
 // Only downloads single file
@@ -51,13 +53,10 @@ app.post('/getSingleFile', (req, res) => {
 app.post('/downloadSingleFile', async (req, res) => {
   const { url } = req.body;
   const title = downloadSong(url);
-  // setTimeout(() => {
-  //   res.set({
-  //     'Content-Type': 'application/octet-stream',
-  //     'Content-Disposition': 'attachment; filename=' + title + '.mp3',
-  //   });
-  //   res.send('./songs/' + title + '.mp3');
-  // }, 5000);
+  setTimeout(() => {
+    console.log('File downloaded on a local machine. File: ' + title + '.mp3');
+    res.status(202);
+  }, 5000);
 });
 
 app.post('/getPlaylist', async (req, res) => {

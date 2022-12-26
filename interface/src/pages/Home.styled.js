@@ -10,6 +10,7 @@ const HomeContainer = styled.div`
   flex-wrap: nowrap;
   position: relative;
   z-index: 99;
+  overflow: auto;
   background-color: #000000;
   &::before {
     content: '';
