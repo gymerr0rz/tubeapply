@@ -28,22 +28,22 @@ function downloadSong(url) {
 function downloadSingleFile(url) {
   const trackInfo = [];
   // Get info about the song via URL
-  scdl.getInfo(url).then((data) => trackInfo.push(data));
+  scdl.getInfo(url).then((data) => {
+    trackInfo.push(data);
+  });
   return trackInfo;
 }
 
-async function downloadPlaylist(url) {
-  await scdl.downloadPlaylist(url, '/playlist/', (error, track) => {
-    if (error) {
-      console.error(error);
-    } else {
-      console.log(`Downloading track: ${track.title}`);
-      console.log(`Artist: ${track.artist}`);
-      console.log(`Duration: ${track.duration} seconds`);
-    }
+function getPlaylistTracks(url) {
+  // Gets tracks info
+  const playlistInfo = [];
+  scdl.downloadPlaylist(url).then((stream) => {
+    playlistInfo.push(stream[1]);
   });
+  return playlistInfo;
 }
 
+// End Points
 app.post('/getSingleFile', (req, res) => {
   const { url } = req.body;
   const trackInfo = downloadSingleFile(url);
@@ -54,14 +54,33 @@ app.post('/downloadSingleFile', async (req, res) => {
   const { url } = req.body;
   const title = downloadSong(url);
   setTimeout(() => {
+    const filePath = path.join(__dirname, '../songs/' + title + '.MP3');
+    res.set({
+      'Content-Type': 'audio/mpeg',
+    });
+    res.setHeader('Content-Disposition', `attachment; filename="${title}.mp3"`);
     console.log('File downloaded on a local machine. File: ' + title + '.mp3');
-    res.status(202);
+    res.status(200).sendFile(filePath, (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('File Send to browser!');
+      }
+    });
   }, 5000);
 });
 
-app.post('/getPlaylist', async (req, res) => {
+app.post('/getPlaylistTracks', async (req, res) => {
   const { url } = req.body;
-  await downloadPlaylist(url);
+  const playlist = getPlaylistTracks(url);
+  setTimeout(() => {
+    res.status(202).send(playlist);
+  }, 5000);
+});
+
+app.post('/getPlaylistInfo', (req, res) => {
+  const { url } = req.body;
+  const playlistTracksNames = getPlaylistTracks(url);
 });
 
 module.exports = app;

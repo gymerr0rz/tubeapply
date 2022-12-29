@@ -60,6 +60,7 @@ export default class Home extends Component {
   whichButtonClicked(e) {
     const buttons = document.querySelector('.buttonDiv').childNodes;
     const target = e.target;
+    const songContainer = document.querySelector('.song');
     buttons.forEach((button) => {
       if (button === target) {
         target.classList.add('active');
