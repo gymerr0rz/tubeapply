@@ -67,7 +67,6 @@ const HomeContainer = styled.div`
         position: absolute;
         width: 100%;
         height: 100%;
-        filter: blur(20px);
         z-index: -99;
       }
       h1 {
@@ -89,6 +88,7 @@ const HomeContainer = styled.div`
       position: relative;
       overflow: hidden;
       text-align: center;
+
       border-radius: 20px;
       img {
         position: absolute;
@@ -106,22 +106,24 @@ const HomeContainer = styled.div`
     }
     /*  */
     .download-file {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
       width: 421px;
       height: 341px;
       position: relative;
       .downloadBtn {
-        position: absolute;
         border: none;
         border-radius: 20px;
         background-color: rgba(0, 0, 0, 0.4);
         color: #fff;
         padding: 35px 50px;
         font-family: 'Karla';
-        top: 50%;
         font-weight: 900;
-        left: 50%;
+        width: 200px;
         cursor: pointer;
-        transform: translate(-50%, -50%);
         transition: background-color 0.2s ease;
         &:hover {
           background-color: rgba(0, 0, 0, 0.2);

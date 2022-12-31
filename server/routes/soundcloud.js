@@ -26,8 +26,12 @@ function getPlaylistTracks(url) {
 // End Points
 app.post('/getSingleFile', async (req, res) => {
   const { url } = req.body;
-  const trackInfo = await downloadSingleFile(url);
-  res.status(202).send(trackInfo);
+  if (url.includes('soundcloud.com/')) {
+    const trackInfo = await downloadSingleFile(url);
+    res.status(202).send(trackInfo);
+  } else {
+    console.log('Please select the right button or change the source link.');
+  }
 });
 
 app.post('/downloadSingleFile', async (req, res) => {

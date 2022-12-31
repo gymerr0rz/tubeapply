@@ -52,29 +52,35 @@ export default class Home extends Component {
         title.innerText = data.title;
         const img = document.createElement('img');
         img.setAttribute('src', data.thumbnails[4].url);
-        // Right Side
+        // First Download Button "ON CLICK" Video
         const downloadContainer = document.createElement('div');
         downloadContainer.classList.add('download-file');
-
         const mp3 = document.createElement('h1');
         mp3.innerText = 'MP3';
-
         const button = document.createElement('button');
-        button.innerText = 'DOWNLOAD';
+        button.innerText = 'DOWNLOAD MP4';
         button.classList.add('downloadBtn');
         // Download Button "ON CLICK"
         button.addEventListener('click', () => {
-          axios.post(
-            'http://localhost:4000/' + source + '/downloadSingleFile',
-            {
-              url: url,
-            }
-          );
+          axios.post('http://localhost:4000/' + source + '/downloadVideo', {
+            url: url,
+          });
+        });
+
+        // Second Download Button "ON CLICK" Sound
+        const buttonTwo = document.createElement('button');
+        buttonTwo.innerText = 'DOWNLOAD MP3';
+        buttonTwo.classList.add('downloadBtn');
+        // Download buttonTwo "ON CLICK"
+        buttonTwo.addEventListener('click', () => {
+          axios.post('http://localhost:4000/' + source + '/downloadSound', {
+            url: url,
+          });
         });
         // Append
         const root = document.querySelector('.container');
         imgText.append(title, img);
-        downloadContainer.append(button);
+        downloadContainer.append(button, buttonTwo);
         song.append(imgText, downloadContainer);
         root.append(song);
       }
@@ -108,7 +114,6 @@ export default class Home extends Component {
   whichButtonClicked(e) {
     const buttons = document.querySelector('.buttonDiv').childNodes;
     const target = e.target;
-    const songContainer = document.querySelector('.song');
     buttons.forEach((button) => {
       if (button === target) {
         target.classList.add('active');

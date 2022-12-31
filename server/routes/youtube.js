@@ -3,46 +3,65 @@ const app = express.Router();
 const ytdl = require('ytdl-core');
 const fs = require('fs');
 
-async function getSoundInformation(url) {
-  // video.pipe(res);
-
+// URL extract Information
+async function getURLInformation(url) {
   const render = await ytdl.getBasicInfo(url);
   const soundInfo = render.videoDetails;
 
   return soundInfo;
 }
 
-async function downloadMP4(url, info, res) {
+// Download Sound as MP3
+async function downloadMP3(url, res) {
+  const sound = ytdl(url, {
+    filter: 'audioonly',
+  });
+
+  await sound.pipe(res);
+}
+
+// Download Video as MP4
+async function downloadMP4(url, res) {
   const video = ytdl(url, {
     filter: 'videoandaudio',
   });
 
-  const renderInfo = await ytdl.getBasicInfo(url);
-  info.push(renderInfo.videoDetails);
-
-  video.pipe(fs.createWriteStream(`${renderInfo.videoDetails.title}.mp4`));
-
-  video.on('error', (error) => {
-    console.error(error);
-  });
-
-  video.on('end', () => {
-    console.log('Finished downloading video');
-    res.send();
-  });
+  await video.pipe(res);
 }
 
-app.post('/getVideo', async (req, res) => {
+// Backend Point for Button Download MP4
+app.post('/downloadVideo', async (req, res) => {
   const { url } = req.body;
-  const videoInfo = [];
-  await downloadMP4(url, videoInfo);
+  try {
+    res.setHeader('Content-Type', 'video/mp4');
+    res.setHeader('Content-Disposition', `attachment; filename="1.MP4"`);
+    await downloadMP4(url, res);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
+// Backend Point for Button Download MP3
+app.post('/downloadSound', async (req, res) => {
+  const { url } = req.body;
+  try {
+    res.setHeader('Content-Type', 'audio/mpeg');
+    res.setHeader('Content-Disposition', `attachment; filename="1.MP3"`);
+    await downloadMP3(url, res);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// Get Youtube URL Information
 app.post('/getSingleFile', async (req, res) => {
   const { url } = req.body;
-  const soundInfo = await getSoundInformation(url);
-
-  res.send(soundInfo);
+  if (url.includes('youtube.com/watch?')) {
+    const soundInfo = await getURLInformation(url);
+    res.send(soundInfo);
+  } else {
+    console.log('Please select the right button or change the source link.');
+  }
 });
 
 module.exports = app;
