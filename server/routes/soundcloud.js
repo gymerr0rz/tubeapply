@@ -4,26 +4,6 @@ const scdl = require('soundcloud-downloader').default;
 const fs = require('fs');
 const path = require('path');
 
-// Check how many songs directory has
-function checkDir() {
-  const dir = fs.readdirSync('./songs/');
-  if (dir === []) {
-    return 0;
-  }
-  return dir.length + 1;
-}
-
-// Downloads the song
-function downloadSong(url) {
-  const fileNumber = checkDir();
-
-  scdl.download(url).then((stream) => {
-    stream.pipe(fs.createWriteStream('./songs/' + fileNumber + '.mp3'));
-  });
-
-  return fileNumber;
-}
-
 // Only downloads single file
 function downloadSingleFile(url) {
   const trackInfo = [];
@@ -52,22 +32,12 @@ app.post('/getSingleFile', (req, res) => {
 
 app.post('/downloadSingleFile', async (req, res) => {
   const { url } = req.body;
-  const title = downloadSong(url);
-  setTimeout(() => {
-    const filePath = path.join(__dirname, '../songs/' + title + '.MP3');
-    res.set({
-      'Content-Type': 'audio/mpeg',
-    });
-    res.setHeader('Content-Disposition', `attachment; filename="${title}.mp3"`);
-    console.log('File downloaded on a local machine. File: ' + title + '.mp3');
-    res.status(200).sendFile(filePath, (err) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('File Send to browser!');
-      }
-    });
-  }, 5000);
+  res.setHeader('Accept-Ranges', 'bytes');
+  res.setHeader('Content-Type', 'audio/mpeg');
+  res.setHeader('Content-Disposition', `attachment; filename="1.MP3"`);
+  scdl.download(url).then((stream) => {
+    stream.pipe(res);
+  });
 });
 
 app.post('/getPlaylistTracks', async (req, res) => {
