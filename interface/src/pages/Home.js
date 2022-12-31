@@ -5,37 +5,79 @@ import axios from 'axios';
 export default class Home extends Component {
   getLink() {
     function createSong(data, url, source) {
-      // Left Side
-      const song = document.createElement('div');
-      song.classList.add('song');
-      const imgText = document.createElement('div');
-      imgText.classList.add('file-image');
-      const title = document.createElement('h1');
-      title.innerText = data.title;
-      const img = document.createElement('img');
-      img.setAttribute('src', data.artwork_url);
-      // Right Side
-      const downloadContainer = document.createElement('div');
-      downloadContainer.classList.add('download-file');
+      if (source === 'soundcloud') {
+        // Left Side
+        const song = document.createElement('div');
+        song.classList.add('song');
+        const imgText = document.createElement('div');
+        imgText.classList.add('file-image');
+        const title = document.createElement('h1');
+        title.innerText = data.title;
+        const img = document.createElement('img');
+        img.setAttribute('src', data.artwork_url);
+        // Right Side
+        const downloadContainer = document.createElement('div');
+        downloadContainer.classList.add('download-file');
 
-      const mp3 = document.createElement('h1');
-      mp3.innerText = 'MP3';
+        const mp3 = document.createElement('h1');
+        mp3.innerText = 'MP3';
 
-      const button = document.createElement('button');
-      button.innerText = 'DOWNLOAD';
-      button.classList.add('downloadBtn');
-      // Download Button "ON CLICK"
-      button.addEventListener('click', () => {
-        axios.post('http://localhost:4000/' + source + '/downloadSingleFile', {
-          url: url,
+        const button = document.createElement('button');
+        button.innerText = 'DOWNLOAD';
+        button.classList.add('downloadBtn');
+        // Download Button "ON CLICK"
+        button.addEventListener('click', () => {
+          axios.post(
+            'http://localhost:4000/' + source + '/downloadSingleFile',
+            {
+              url: url,
+            }
+          );
         });
-      });
-      // Append
-      const root = document.querySelector('.container');
-      imgText.append(title, img);
-      downloadContainer.append(button);
-      song.append(imgText, downloadContainer);
-      root.append(song);
+        // Append
+        const root = document.querySelector('.container');
+        imgText.append(title, img);
+        downloadContainer.append(button);
+        song.append(imgText, downloadContainer);
+        root.append(song);
+      }
+
+      if (source === 'youtube') {
+        // Left Side
+        const song = document.createElement('div');
+        song.classList.add('song');
+        const imgText = document.createElement('div');
+        imgText.classList.add('file-image-youtube');
+        const title = document.createElement('h1');
+        title.innerText = data.title;
+        const img = document.createElement('img');
+        img.setAttribute('src', data.thumbnails[4].url);
+        // Right Side
+        const downloadContainer = document.createElement('div');
+        downloadContainer.classList.add('download-file');
+
+        const mp3 = document.createElement('h1');
+        mp3.innerText = 'MP3';
+
+        const button = document.createElement('button');
+        button.innerText = 'DOWNLOAD';
+        button.classList.add('downloadBtn');
+        // Download Button "ON CLICK"
+        button.addEventListener('click', () => {
+          axios.post(
+            'http://localhost:4000/' + source + '/downloadSingleFile',
+            {
+              url: url,
+            }
+          );
+        });
+        // Append
+        const root = document.querySelector('.container');
+        imgText.append(title, img);
+        downloadContainer.append(button);
+        song.append(imgText, downloadContainer);
+        root.append(song);
+      }
     }
 
     // Getting the button clicked on value then @POST the value to the back-endpoint and creating files on a local machine.
@@ -49,8 +91,14 @@ export default class Home extends Component {
             url: url,
           })
           .then((data) => {
-            const info = data.data[0];
-            createSong(info, url, buttonInnerText);
+            if (buttonInnerText === 'soundcloud') {
+              const info = data.data[0];
+              createSong(info, url, buttonInnerText);
+            }
+            if (buttonInnerText === 'youtube') {
+              const info = data.data;
+              createSong(info, url, buttonInnerText);
+            }
           });
       }
     });
@@ -75,7 +123,7 @@ export default class Home extends Component {
     return (
       <HomeContainer className="container">
         <Logo src={logo} />
-        <p>Download music and videos from youtube.</p>
+        <p>Download music and videos from youtube and soundcloud.</p>
         <InputBox>
           <input
             type="text"

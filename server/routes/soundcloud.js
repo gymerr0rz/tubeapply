@@ -5,10 +5,10 @@ const fs = require('fs');
 const path = require('path');
 
 // Only downloads single file
-function downloadSingleFile(url) {
+async function downloadSingleFile(url) {
   const trackInfo = [];
   // Get info about the song via URL
-  scdl.getInfo(url).then((data) => {
+  await scdl.getInfo(url).then((data) => {
     trackInfo.push(data);
   });
   return trackInfo;
@@ -24,10 +24,10 @@ function getPlaylistTracks(url) {
 }
 
 // End Points
-app.post('/getSingleFile', (req, res) => {
+app.post('/getSingleFile', async (req, res) => {
   const { url } = req.body;
-  const trackInfo = downloadSingleFile(url);
-  setTimeout(() => res.status(202).send(trackInfo), 2000);
+  const trackInfo = await downloadSingleFile(url);
+  res.status(202).send(trackInfo);
 });
 
 app.post('/downloadSingleFile', async (req, res) => {
@@ -42,7 +42,7 @@ app.post('/downloadSingleFile', async (req, res) => {
 
 app.post('/getPlaylistTracks', async (req, res) => {
   const { url } = req.body;
-  const playlist = getPlaylistTracks(url);
+  const playlist = await getPlaylistTracks(url);
   setTimeout(() => {
     res.status(202).send(playlist);
   }, 5000);

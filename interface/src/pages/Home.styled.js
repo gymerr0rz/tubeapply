@@ -78,6 +78,33 @@ const HomeContainer = styled.div`
         text-align: center;
       }
     }
+    /* youtube */
+    .file-image-youtube {
+      background-color: rgba(0, 0, 0, 0.5);
+      width: 669px;
+      height: 341px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      border-radius: 20px;
+      img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: -99;
+      }
+      h1 {
+        padding: 20px;
+        font-size: 1rem;
+        z-index: 99;
+        font-family: 'Karla';
+        text-align: center;
+      }
+    }
+    /*  */
     .download-file {
       width: 421px;
       height: 341px;
