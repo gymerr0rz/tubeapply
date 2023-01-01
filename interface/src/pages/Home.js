@@ -27,12 +27,7 @@ export default class Home extends Component {
         button.classList.add('downloadBtn');
         // Download Button "ON CLICK"
         button.addEventListener('click', () => {
-          axios.post(
-            'http://localhost:4000/' + source + '/downloadSingleFile',
-            {
-              url: url,
-            }
-          );
+          axios.get('http://localhost:4000/' + source + '/downloadSingleFile');
         });
         // Append
         const root = document.querySelector('.container');
@@ -60,11 +55,13 @@ export default class Home extends Component {
         const button = document.createElement('button');
         button.innerText = 'DOWNLOAD MP4';
         button.classList.add('downloadBtn');
+        const link = url;
+        const body = link.slice(29);
         // Download Button "ON CLICK"
         button.addEventListener('click', () => {
-          axios.post('http://localhost:4000/' + source + '/downloadVideo', {
-            url: url,
-          });
+          axios.get(
+            'http://localhost:4000/' + source + '/downloadVideo' + body
+          );
         });
 
         // Second Download Button "ON CLICK" Sound

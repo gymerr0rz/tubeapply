@@ -34,14 +34,15 @@ app.post('/getSingleFile', async (req, res) => {
   }
 });
 
-app.post('/downloadSingleFile', async (req, res) => {
-  const { url } = req.body;
-  res.setHeader('Accept-Ranges', 'bytes');
+app.get('/downloadSingleFile', async (req, res) => {
+  const path = req.params.id;
+  console.log(path);
   res.setHeader('Content-Type', 'audio/mpeg');
-  res.setHeader('Content-Disposition', `attachment; filename="1.MP3"`);
-  scdl.download(url).then((stream) => {
-    stream.pipe(res);
-  });
+  res.setHeader('Content-Disposition', 'attachment;');
+
+  // scdl.download(url).then((stream) => {
+  //   stream.pipe(res);
+  // });
 });
 
 app.post('/getPlaylistTracks', async (req, res) => {
