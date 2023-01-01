@@ -74,7 +74,10 @@ app.post('/getSingleFile', async (req, res) => {
     const soundInfo = await getURLInformation(url);
     res.send(soundInfo);
   } else {
-    console.log('Please select the right button or change the source link.');
+    res.json({
+      status: 'failed',
+      message: 'Please select the right button or change the source link.',
+    });
   }
 });
 

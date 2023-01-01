@@ -2,6 +2,8 @@ import React, { Component, createElement } from 'react';
 import logo from '../assets/logo.png';
 import { ChooseSite, HomeContainer, InputBox, Logo } from './Home.styled';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 export default class Home extends Component {
   getLink() {
     function createSong(data, url, source) {
@@ -99,6 +101,17 @@ export default class Home extends Component {
     // Getting the button clicked on value then @POST the value to the back-endpoint and creating files on a local machine.
     const buttons = document.querySelector('.buttonDiv').childNodes;
     const url = document.querySelector('.inputURL').value;
+    // Toastify Options
+    const options = {
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'dark',
+    };
     buttons.forEach((button) => {
       const buttonInnerText = button.innerText.toLowerCase();
       if (button.classList.contains('active')) {
@@ -107,13 +120,17 @@ export default class Home extends Component {
             url: url,
           })
           .then((data) => {
-            if (buttonInnerText === 'soundcloud') {
-              const info = data.data[0];
-              createSong(info, url, buttonInnerText);
-            }
-            if (buttonInnerText === 'youtube') {
-              const info = data.data;
-              createSong(info, url, buttonInnerText);
+            console.log(data);
+            if (data.data.status === 'failed') {
+              toast.error(data.data.message, options);
+            } else {
+              if (buttonInnerText === 'soundcloud') {
+                const info = data.data[0];
+                createSong(info, url, buttonInnerText);
+              } else if (buttonInnerText === 'youtube') {
+                const info = data.data;
+                createSong(info, url, buttonInnerText);
+              }
             }
           });
       }
@@ -124,7 +141,14 @@ export default class Home extends Component {
   whichButtonClicked(e) {
     const buttons = document.querySelector('.buttonDiv').childNodes;
     const target = e.target;
+    const song = document.getRootNode().querySelector('.song');
+    if (song === null) {
+      console.log('Song not render yet.');
+    } else {
+      song.remove();
+    }
     buttons.forEach((button) => {
+      console.log(song);
       if (button === target) {
         target.classList.add('active');
       } else {
@@ -136,27 +160,30 @@ export default class Home extends Component {
   // Default Render
   render() {
     return (
-      <HomeContainer className="container">
-        <Logo src={logo} />
-        <p>Download music and videos from youtube and soundcloud.</p>
-        <InputBox>
-          <input
-            type="text"
-            placeholder="INSERT YOUTUBE LINK"
-            className="inputURL"
-          />
-          <button onClick={this.getLink}>
-            <i class="fa fa-cloud-upload"></i>
-          </button>
-        </InputBox>
-        <ChooseSite
-          onClick={(e) => this.whichButtonClicked(e)}
-          className="buttonDiv"
-        >
-          <button>YOUTUBE</button>
-          <button>SOUNDCLOUD</button>
-        </ChooseSite>
-      </HomeContainer>
+      <>
+        <ToastContainer limit={3} />
+        <HomeContainer className="container">
+          <Logo src={logo} />
+          <p>Download music and videos from youtube and soundcloud.</p>
+          <InputBox>
+            <input
+              type="text"
+              placeholder="INSERT YOUTUBE LINK"
+              className="inputURL"
+            />
+            <button onClick={this.getLink}>
+              <i class="fa fa-cloud-upload"></i>
+            </button>
+          </InputBox>
+          <ChooseSite
+            onClick={(e) => this.whichButtonClicked(e)}
+            className="buttonDiv"
+          >
+            <button>YOUTUBE</button>
+            <button>SOUNDCLOUD</button>
+          </ChooseSite>
+        </HomeContainer>
+      </>
     );
   }
 }

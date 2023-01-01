@@ -45,7 +45,10 @@ app.post('/getSingleFile', async (req, res) => {
     const trackInfo = await downloadSingleFile(url);
     res.status(202).send(trackInfo);
   } else {
-    console.log('Please select the right button or change the source link.');
+    res.json({
+      status: 'failed',
+      message: 'Please select the right button or change the source link.',
+    });
   }
 });
 
