@@ -4,6 +4,14 @@ const scdl = require('soundcloud-downloader').default;
 const fs = require('fs');
 const path = require('path');
 
+// Removes emojis from a string
+function removeEmojis(string) {
+  return string.replace(
+    /([\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2694-\u2697]|\uD83E[\uDD10-\uDD5D])/g,
+    ''
+  );
+}
+
 // Only downloads single file
 async function downloadSingleFile(url) {
   const trackInfo = [];
@@ -23,6 +31,13 @@ function getPlaylistTracks(url) {
   return playlistInfo;
 }
 
+// Downloads the song by given URL
+async function downloadSong(url, res) {
+  await scdl.download(url).then((stream) => {
+    stream.pipe(res);
+  });
+}
+
 // End Points
 app.post('/getSingleFile', async (req, res) => {
   const { url } = req.body;
@@ -34,17 +49,23 @@ app.post('/getSingleFile', async (req, res) => {
   }
 });
 
-app.get('/downloadSingleFile', async (req, res) => {
-  const path = req.params.id;
-  console.log(path);
-  res.setHeader('Content-Type', 'audio/mpeg');
-  res.setHeader('Content-Disposition', 'attachment;');
-
-  // scdl.download(url).then((stream) => {
-  //   stream.pipe(res);
-  // });
+// Get queries from front-end dissables them and then assembles them back with url that passes into different functions and they return song info and the file.
+app.get('/downloadSong', async (req, res) => {
+  const querySong = req.query.song;
+  const queryUser = req.query.user;
+  const url = `https://soundcloud.com/${queryUser + '/' + querySong}`;
+  try {
+    const songInfo = await downloadSingleFile(url);
+    const title = removeEmojis(songInfo[0].title);
+    res.setHeader('Content-Type', 'mpeg/audio');
+    res.setHeader('Content-Disposition', `attachment; filename="${title}.mp3`);
+    await downloadSong(url, res);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
+// Work in progress
 app.post('/getPlaylistTracks', async (req, res) => {
   const { url } = req.body;
   const playlist = await getPlaylistTracks(url);

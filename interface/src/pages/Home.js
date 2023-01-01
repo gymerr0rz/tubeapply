@@ -25,9 +25,16 @@ export default class Home extends Component {
         const button = document.createElement('button');
         button.innerText = 'DOWNLOAD';
         button.classList.add('downloadBtn');
+        const link = url;
+        const urlSlice = link.slice(23).split('/');
+        const user = urlSlice[0];
+        const songName = urlSlice[1];
+        const sendBody = `?user=${user}&song=${songName}`;
         // Download Button "ON CLICK"
         button.addEventListener('click', () => {
-          axios.get('http://localhost:4000/' + source + '/downloadSingleFile');
+          window.open(
+            'http://localhost:4000/' + source + '/downloadSong' + sendBody
+          );
         });
         // Append
         const root = document.querySelector('.container');
@@ -59,7 +66,7 @@ export default class Home extends Component {
         const body = link.slice(29);
         // Download Button "ON CLICK"
         button.addEventListener('click', () => {
-          axios.get(
+          window.open(
             'http://localhost:4000/' + source + '/downloadVideo' + body
           );
         });
@@ -70,9 +77,9 @@ export default class Home extends Component {
         buttonTwo.classList.add('downloadBtn');
         // Download buttonTwo "ON CLICK"
         buttonTwo.addEventListener('click', () => {
-          axios.post('http://localhost:4000/' + source + '/downloadSound', {
-            url: url,
-          });
+          window.open(
+            'http://localhost:4000/' + source + '/downloadSound' + body
+          );
         });
         // Append
         const root = document.querySelector('.container');

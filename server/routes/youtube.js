@@ -54,9 +54,13 @@ app.get('/downloadVideo', async (req, res) => {
 
 // Backend Point for Button Download MP3
 app.get('/downloadSound', async (req, res) => {
-  const { url } = req.body;
+  const queryVideo = req.query.v;
+  const url = `https://www.youtube.com/watch?v=${queryVideo}`;
   try {
-    res.setHeader('Content-Type', 'audio/mpeg');
+    const videoInfo = await getURLInformation(url);
+    const title = removeEmojis(videoInfo.title);
+    res.setHeader('Content-Type', 'video/mp4');
+    res.setHeader('Content-Disposition', `attachment; filename="${title}.mp3"`);
     await downloadMP3(url, res);
   } catch (err) {
     console.log(err);
