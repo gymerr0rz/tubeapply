@@ -59,7 +59,7 @@ export default class Home extends Component {
         title.innerText = data.title;
         // Image response from API
         const img = document.createElement('img');
-        img.setAttribute('src', data.thumbnails[4].url);
+        img.setAttribute('src', data.thumbnails[0].url);
         // Right Side [2 Buttons]
         const downloadContainer = document.createElement('div');
         downloadContainer.classList.add('download-file');
