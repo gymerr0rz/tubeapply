@@ -27,31 +27,6 @@ async function downloadMP3(url, res) {
   await sound.pipe(res);
 }
 
-// Download Video as MP4
-async function downloadMP4(url, res) {
-  const video = ytdl(url, {
-    filter: 'videoandaudio',
-    quality: 'highestvideo',
-  });
-
-  await video.pipe(res);
-}
-
-// Backend Point for Button Download MP4
-app.get('/downloadVideo', async (req, res) => {
-  const queryVideo = req.query.v;
-  const url = `https://www.youtube.com/watch?v=${queryVideo}`;
-  try {
-    const videoInfo = await getURLInformation(url);
-    const title = removeEmojis(videoInfo.title);
-    res.setHeader('Content-Type', 'video/mp4');
-    res.setHeader('Content-Disposition', `attachment; filename="${title}.mp4"`);
-    await downloadMP4(url, res);
-  } catch (err) {
-    console.log(err);
-  }
-});
-
 // Backend Point for Button Download MP3
 app.get('/downloadSound', async (req, res) => {
   const queryVideo = req.query.v;
@@ -74,7 +49,7 @@ app.post('/getSingleFile', async (req, res) => {
     const soundInfo = await getURLInformation(url);
     res.send(soundInfo);
   } else {
-    res.json({
+    res.status(404).json({
       status: 'failed',
       message: 'Please select the right button or change the source link.',
     });

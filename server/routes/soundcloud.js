@@ -14,12 +14,13 @@ function removeEmojis(string) {
 
 // Only downloads single file
 async function downloadSingleFile(url) {
-  const trackInfo = [];
+  let trackData;
   // Get info about the song via URL
   await scdl.getInfo(url).then((data) => {
-    trackInfo.push(data);
+    trackData = data;
   });
-  return trackInfo;
+
+  return trackData;
 }
 
 function getPlaylistTracks(url) {
@@ -45,7 +46,7 @@ app.post('/getSingleFile', async (req, res) => {
     const trackInfo = await downloadSingleFile(url);
     res.status(202).send(trackInfo);
   } else {
-    res.json({
+    res.status(404).json({
       status: 'failed',
       message: 'Please select the right button or change the source link.',
     });
@@ -54,14 +55,15 @@ app.post('/getSingleFile', async (req, res) => {
 
 // Get queries from front-end dissables them and then assembles them back with url that passes into different functions and they return song info and the file.
 app.get('/downloadSong', async (req, res) => {
-  const querySong = req.query.song;
-  const queryUser = req.query.user;
+  const querySong = req.query.s;
+  const queryUser = req.query.u;
   const url = `https://soundcloud.com/${queryUser + '/' + querySong}`;
   try {
-    const songInfo = await downloadSingleFile(url);
-    const title = removeEmojis(songInfo[0].title);
     res.setHeader('Content-Type', 'mpeg/audio');
-    res.setHeader('Content-Disposition', `attachment; filename="${title}.mp3`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${querySong}.mp3`
+    );
     await downloadSong(url, res);
   } catch (err) {
     console.log(err);
