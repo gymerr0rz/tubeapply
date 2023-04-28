@@ -1,16 +1,6 @@
-const express = require('express');
-const app = express.Router();
-const ytdl = require('ytdl-core');
-const fs = require('fs');
+import { removeEmojis } from '../../utils/removeEmoji.js';
+import ytdl from 'ytdl-core';
 
-function removeEmojis(string) {
-  return string.replace(
-    /([\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2694-\u2697]|\uD83E[\uDD10-\uDD5D])/g,
-    ''
-  );
-}
-
-// URL extract Information
 async function getURLInformation(url) {
   const render = await ytdl.getBasicInfo(url);
   const soundInfo = render.videoDetails;
@@ -28,7 +18,7 @@ async function downloadMP3(url, res) {
 }
 
 // Backend Point for Button Download MP3
-app.get('/downloadSound', async (req, res) => {
+const download_sound = async (req, res) => {
   const queryVideo = req.query.v;
   const url = `https://www.youtube.com/watch?v=${queryVideo}`;
   try {
@@ -40,10 +30,10 @@ app.get('/downloadSound', async (req, res) => {
   } catch (err) {
     console.log(err);
   }
-});
+};
 
 // Get Youtube URL Information
-app.post('/getSingleFile', async (req, res) => {
+const get_url_information = async (req, res) => {
   const { url } = req.body;
   if (url.includes('youtube.com/watch?')) {
     const soundInfo = await getURLInformation(url);
@@ -54,6 +44,19 @@ app.post('/getSingleFile', async (req, res) => {
       message: 'Please select the right button or change the source link.',
     });
   }
-});
+};
 
-module.exports = app;
+const youtube_playlist_info = async (req, res) => {
+  const { url } = req.body;
+  if (url.includes('youtube.com/watch?')) {
+    const soundInfo = await getURLInformation(url);
+    res.send(soundInfo);
+  } else {
+    res.status(404).json({
+      status: 'failed',
+      message: 'Please select the right button or change the source link.',
+    });
+  }
+};
+
+export { youtube_playlist_info, get_url_information, download_sound };

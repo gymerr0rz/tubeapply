@@ -1,21 +1,7 @@
-const express = require('express');
-const app = express.Router();
-const scdl = require('soundcloud-downloader').default;
-const fs = require('fs');
-const path = require('path');
+import scdl from 'soundcloud-downloader';
 
-// Removes emojis from a string
-function removeEmojis(string) {
-  return string.replace(
-    /([\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2694-\u2697]|\uD83E[\uDD10-\uDD5D])/g,
-    ''
-  );
-}
-
-// Only downloads single file
 async function downloadSingleFile(url) {
   let trackData;
-  // Get info about the song via URL
   await scdl.getInfo(url).then((data) => {
     trackData = data;
   });
@@ -24,7 +10,6 @@ async function downloadSingleFile(url) {
 }
 
 function getPlaylistTracks(url) {
-  // Gets tracks info
   const playlistInfo = [];
   scdl.downloadPlaylist(url).then((stream) => {
     playlistInfo.push(stream[1]);
@@ -32,15 +17,13 @@ function getPlaylistTracks(url) {
   return playlistInfo;
 }
 
-// Downloads the song by given URL
 async function downloadSong(url, res) {
   await scdl.download(url).then((stream) => {
     stream.pipe(res);
   });
 }
 
-// End Points
-app.post('/getSingleFile', async (req, res) => {
+const get_single_file = async (req, res) => {
   const { url } = req.body;
   if (url.includes('soundcloud.com/')) {
     const trackInfo = await downloadSingleFile(url);
@@ -51,10 +34,8 @@ app.post('/getSingleFile', async (req, res) => {
       message: 'Please select the right button or change the source link.',
     });
   }
-});
-
-// Get queries from front-end dissables them and then assembles them back with url that passes into different functions and they return song info and the file.
-app.get('/downloadSong', async (req, res) => {
+};
+const download_song = async (req, res) => {
   const querySong = req.query.s;
   const queryUser = req.query.u;
   const url = `https://soundcloud.com/${queryUser + '/' + querySong}`;
@@ -68,20 +49,25 @@ app.get('/downloadSong', async (req, res) => {
   } catch (err) {
     console.log(err);
   }
-});
+};
 
 // Work in progress
-app.post('/getPlaylistTracks', async (req, res) => {
+const download_playlist_information = async (req, res) => {
   const { url } = req.body;
   const playlist = await getPlaylistTracks(url);
   setTimeout(() => {
     res.status(202).send(playlist);
   }, 5000);
-});
+};
 
-app.post('/getPlaylistInfo', (req, res) => {
+const get_playlist_information = (req, res) => {
   const { url } = req.body;
   const playlistTracksNames = getPlaylistTracks(url);
-});
+};
 
-module.exports = app;
+export {
+  get_playlist_information,
+  download_playlist_information,
+  download_song,
+  get_single_file,
+};

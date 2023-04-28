@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const PORT = 4000;
 const app = express();
-const youtubeRoute = require('./routes/youtube');
-const soundcloudRoute = require('./routes/soundcloud');
-const cors = require('cors');
+import youtubeRoute from './routes/youtube/youtube.js';
+import soundcloudRoute from './routes/soundcloud/soundcloud.js';
+import cors from 'cors';
 
 app.use(express.static('public'));
 app.use(cors());
