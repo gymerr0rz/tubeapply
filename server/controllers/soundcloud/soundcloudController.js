@@ -1,25 +1,32 @@
+import JSZip from 'jszip';
+import streamToArray from 'stream-to-array';
 import scdwl from 'soundcloud-downloader';
 
 const scdl = scdwl.default;
 
 async function downloadPlaylistTracks(url, res) {
-  await scdl.downloadPlaylist(url).then((stream) => {
-    console.log(stream[0][0]);
-    stream.pipe(res);
+  const zip = new JSZip();
+  await scdl.downloadPlaylist(url).then(async (stream) => {
+    let count = 0;
+    for (const song of stream[0]) {
+      const array = await streamToArray(song);
+      zip.file(`${count++}.mp3`, Buffer.concat(array));
+    }
   });
+  const content = await zip.generateAsync({ type: 'nodebuffer' });
+  return content;
 }
 
 async function getPlaylistInfo(url) {
   const playlistInfo = [];
-  await scdl.getInfo(url).then((stream) => {
-    console.log(stream);
+  await scdl.getSetInfo(url).then((stream) => {
+    playlistInfo.push(stream);
   });
   return playlistInfo;
 }
 
 async function downloadSong(url, res) {
   await scdl.download(url).then((stream) => {
-    console.log(stream);
     stream.pipe(res);
   });
 }
@@ -62,21 +69,33 @@ const download_song = async (req, res) => {
   }
 };
 
-// Work in progress
 const download_playlist = async (req, res) => {
-  const { url } = req.body;
   try {
-    res.setHeader('Content-Type', 'mpeg/audio');
-    await downloadPlaylistTracks(url, res);
+    const queryUser = req.query.u;
+    const queryPlaylist = req.query.p;
+    const url = `https://soundcloud.com/${queryUser}/sets/${queryPlaylist}`;
+    res.set({
+      'Content-Type': 'application/zip',
+      'Content-Disposition': 'attachment; filename=playlist.zip',
+    });
+    const downloadZip = await downloadPlaylistTracks(url, res);
+    res.send(downloadZip);
   } catch (err) {
     console.log(err);
   }
 };
 
 const get_playlist_information = async (req, res) => {
-  const { url } = req.body;
-  const playlistTracksNames = await getPlaylistInfo(url);
-  res.send(playlistTracksNames);
+  try {
+    const { url } = req.body;
+    const playlistTracksNames = await getPlaylistInfo(url);
+    res.send(playlistTracksNames);
+  } catch (err) {
+    res.status(400).json({
+      status: 'failed',
+      message: 'Problem on the server...',
+    });
+  }
 };
 
 export {

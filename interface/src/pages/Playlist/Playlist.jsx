@@ -1,5 +1,4 @@
 import Navbar from '../../components/Navbar/Navbar';
-import { Container } from './Playlist.styled';
 import {
   ChooseSite,
   HomeContainer,
@@ -7,19 +6,23 @@ import {
   Logo,
   Loader,
   LoaderContainer,
+  DownloadBtn,
 } from '../Home/Home.styled';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import logo from '../../assets/logo.png';
 import React, { useState } from 'react';
 import axios from 'axios';
-import VideoContainer from '../../components/VideoContainer/VideoContainer';
+import PlaylistContainer from '../../components/PlaylistContainer/PlaylistContainer';
+import { VideoContainer } from '../../components/PlaylistContainer/PlaylistContainer.styled';
 
 const PlaylistPage = () => {
   const [button, setButton] = useState('');
   const [placeholder, setPlaceholder] = useState('Select a button...');
   const [trackData, setTrackData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [downloadingStatus, setDownloadingStatus] = useState(false);
+  const [playlistUrl, setPlaylistUrl] = useState('');
 
   const handleButtonClick = (e) => {
     const target = e.currentTarget;
@@ -45,11 +48,15 @@ const PlaylistPage = () => {
       setLoading(true);
       if (url) {
         axios
-          .post(`http://localhost:4000/${button.toLowerCase()}/getSingleFile`, {
-            url,
-          })
+          .post(
+            `http://localhost:4000/${button.toLowerCase()}/getPlaylistInfo`,
+            {
+              url,
+            }
+          )
           .then((response) => {
-            setTrackData(response.data);
+            setPlaylistUrl(url);
+            setTrackData(response.data[0].tracks);
             setLoading(false);
           })
           .catch((err) => {
@@ -63,10 +70,43 @@ const PlaylistPage = () => {
     }
   };
 
+  const downloadPlaylist = async () => {
+    if (!playlistUrl) return;
+
+    const url = playlistUrl.split('/');
+    const user = url[3];
+    const playlist = url[5];
+    setDownloadingStatus(true);
+
+    await axios
+      .get(
+        `http://localhost:4000/soundcloud/downloadPlaylist?u=${user}&p=${playlist}`,
+        { responseType: 'blob' } // Set the response type to 'blob' to receive a binary file
+      )
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${playlist}.zip`);
+        document.body.appendChild(link);
+        link.click();
+        setDownloadingStatus(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setDownloadingStatus(false);
+      });
+  };
+
   return (
     <>
       <Navbar link="/" linkName="Download Song" />
-      <ToastContainer limit={3} theme="dark" />
+      <ToastContainer
+        limit={3}
+        theme="dark"
+        position="top-left"
+        hideProgressBar="true"
+      />
       <HomeContainer className="container">
         <Logo src={logo} />
         <p>Download playlist from youtube and soundcloud.</p>
@@ -88,13 +128,26 @@ const PlaylistPage = () => {
           <button onClick={(e) => handleButtonClick(e)}>YOUTUBE</button>
           <button onClick={(e) => handleButtonClick(e)}>SOUNDCLOUD</button>
         </ChooseSite>
-        {trackData.length !== 0 ? (
-          <VideoContainer
-            data={trackData}
-            button={button.toLowerCase()}
-            url={document.querySelector('.inputURL').value}
-          />
+        <VideoContainer>
+          {trackData.length !== 0 && trackData.length > 1
+            ? trackData.map((track) => {
+                return (
+                  <PlaylistContainer
+                    data={track}
+                    button={button.toLowerCase()}
+                    url={document.querySelector('.inputURL').value}
+                  />
+                );
+              })
+            : null}
+        </VideoContainer>
+        {trackData.length !== 0 &&
+        trackData.length > 1 &&
+        !downloadingStatus ? (
+          <DownloadBtn onClick={downloadPlaylist}>DOWNLOAD ALL</DownloadBtn>
         ) : null}
+
+        {downloadingStatus ? <div class="custom-loader"></div> : null}
       </HomeContainer>
     </>
   );

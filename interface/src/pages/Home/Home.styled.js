@@ -19,6 +19,20 @@ const HomeContainer = styled.div`
     margin: 8px;
     font-size: 15px;
   }
+  .custom-loader {
+    margin: 50px;
+    width: 60px;
+    height: 10px;
+    -webkit-mask: linear-gradient(90deg, #766df4 70%, #0000 0) left/20% 100%;
+    background: linear-gradient(#766df4 0 0) left -25% top 0 /20% 100% no-repeat
+      #e4e4ed;
+    animation: ct7 1s infinite steps(6);
+  }
+  @keyframes ct7 {
+    100% {
+      background-position: right -25% top 0;
+    }
+  }
 `;
 
 const Logo = styled.img`
@@ -109,4 +123,24 @@ const LoaderContainer = styled.div`
   align-items: center;
 `;
 
-export { HomeContainer, Logo, InputBox, ChooseSite, Loader, LoaderContainer };
+const DownloadBtn = styled.button`
+  width: 200px;
+  height: 50px;
+  background-color: rgba(61, 64, 194, 1);
+  color: #fff;
+  border-radius: 10px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  margin: 20px 0;
+`;
+
+export {
+  HomeContainer,
+  Logo,
+  InputBox,
+  ChooseSite,
+  Loader,
+  LoaderContainer,
+  DownloadBtn,
+};
