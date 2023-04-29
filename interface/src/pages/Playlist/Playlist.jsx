@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import logo from '../assets/logo.png';
+import Navbar from '../../components/Navbar/Navbar';
+import { Container } from './Playlist.styled';
 import {
   ChooseSite,
   HomeContainer,
@@ -7,13 +7,15 @@ import {
   Logo,
   Loader,
   LoaderContainer,
-} from './Home.styled';
-import axios from 'axios';
+} from '../Home/Home.styled';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import VideoContainer from '../components/VideoContainer/VideoContainer';
+import logo from '../../assets/logo.png';
+import React, { useState } from 'react';
+import axios from 'axios';
+import VideoContainer from '../../components/VideoContainer/VideoContainer';
 
-const Home = () => {
+const PlaylistPage = () => {
   const [button, setButton] = useState('');
   const [placeholder, setPlaceholder] = useState('Select a button...');
   const [trackData, setTrackData] = useState([]);
@@ -41,32 +43,33 @@ const Home = () => {
     } else {
       const url = document.querySelector('.inputURL').value;
       setLoading(true);
-      url
-        ? axios
-            .post(
-              `http://localhost:4000/${button.toLowerCase()}/getSingleFile`,
-              {
-                url,
-              }
-            )
-            .then((response) => {
-              setTrackData(response.data);
-              setLoading(false);
-            })
-            .catch((err) => {
-              toast.error(err.response.data.message);
-              setLoading(false);
-            })
-        : toast.error('Link the video/song.');
+      if (url) {
+        axios
+          .post(`http://localhost:4000/${button.toLowerCase()}/getSingleFile`, {
+            url,
+          })
+          .then((response) => {
+            setTrackData(response.data);
+            setLoading(false);
+          })
+          .catch((err) => {
+            toast.error(err.response.data.message);
+            setLoading(false);
+          });
+      } else {
+        toast.error('Link the video/song.');
+        setLoading(false);
+      }
     }
   };
 
   return (
     <>
-      <ToastContainer limit={3} />
+      <Navbar link="/" linkName="Download Song" />
+      <ToastContainer limit={3} theme="dark" />
       <HomeContainer className="container">
         <Logo src={logo} />
-        <p>Download music and videos from youtube and soundcloud.</p>
+        <p>Download playlist from youtube and soundcloud.</p>
         <InputBox>
           <input type="text" placeholder={placeholder} className="inputURL" />
           <button onClick={handleSubmit} disabled={loading}>
@@ -97,4 +100,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default PlaylistPage;

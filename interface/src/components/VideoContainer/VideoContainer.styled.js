@@ -58,21 +58,18 @@ const Download = styled.div`
     border-radius: 20px;
     background-color: rgba(0, 0, 0, 0.4);
     color: #fff;
-    height: 100px;
-    padding: 0 50px;
+    height: 80px;
     font-weight: 900;
-    width: 300px;
+    width: 200px;
     cursor: pointer;
     display: flex;
     justify-content: center;
     gap: 20px;
     align-items: center;
-    transition: background-color 100ms ease;
-
+    transition: all 50ms ease-in;
     &:hover {
       background-color: rgba(0, 0, 0, 0.2);
       border: #fff 2px solid;
-      transition: background-color 100ms ease;
     }
   }
 `;

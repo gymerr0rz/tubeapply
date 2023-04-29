@@ -11,25 +11,7 @@ const HomeContainer = styled.div`
   position: relative;
   z-index: 99;
   overflow: hidden;
-  background-color: #000000;
-  &::before {
-    content: '';
-    position: absolute;
-    z-index: -99;
-    width: 100vw;
-    height: 100vh;
-    opacity: 100%;
-    background: linear-gradient(
-      252.63deg,
-      #0b0d0f 0.26%,
-      #393b83 32.99%,
-      #010101 80.78%,
-      #33357d 95.84%,
-      #40439d 99.73%
-    );
-    mix-blend-mode: normal;
-    filter: blur(250px);
-  }
+  background-color: #111111;
   p {
     font-family: 'Karla';
     color: #fff;
@@ -51,7 +33,7 @@ const InputBox = styled.div`
     border-radius: 47px 0 0 47px;
     width: 524px;
     height: 60px;
-    background-color: #101213;
+    background-color: #1b1b1b;
     color: #fff;
     padding: 0 0 0 40px;
     font-size: 15px;
@@ -88,16 +70,18 @@ const ChooseSite = styled.div`
     border: none;
     padding: 15px 35px;
     margin: 10px 5px;
-    background-color: rgba(46, 49, 146, 1);
+    border: 2px solid rgba(46, 49, 146, 1);
     color: #fff;
     font-family: 'Karla';
-    border-radius: 46px;
+    border-radius: 10px;
     cursor: pointer;
+    background-color: transparent;
+    transition: background-color 100ms ease-in-out;
     &:hover {
       background-color: rgba(61, 64, 194, 1);
     }
     &.active {
-      background-color: rgba(17, 18, 55, 1);
+      background-color: rgba(61, 64, 194, 1);
     }
   }
 `;
