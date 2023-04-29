@@ -102,4 +102,27 @@ const ChooseSite = styled.div`
   }
 `;
 
-export { HomeContainer, Logo, InputBox, ChooseSite };
+const Loader = styled.div`
+  width: 50px;
+  height: 11px;
+  background: radial-gradient(circle closest-side, #766df4 90%, #0000) 0 0/33%
+    100% space;
+  clip-path: inset(0 100% 0 0);
+  animation: d1 1s steps(4) infinite;
+
+  @keyframes d1 {
+    to {
+      clip-path: inset(0 -34% 0 0);
+    }
+  }
+`;
+
+const LoaderContainer = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export { HomeContainer, Logo, InputBox, ChooseSite, Loader, LoaderContainer };

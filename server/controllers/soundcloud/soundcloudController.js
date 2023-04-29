@@ -1,13 +1,6 @@
-import scdl from 'soundcloud-downloader';
+import scdwl from 'soundcloud-downloader';
 
-async function downloadSingleFile(url) {
-  let trackData;
-  await scdl.getInfo(url).then((data) => {
-    trackData = data;
-  });
-
-  return trackData;
-}
+const scdl = scdwl.default;
 
 function getPlaylistTracks(url) {
   const playlistInfo = [];
@@ -26,7 +19,7 @@ async function downloadSong(url, res) {
 const get_single_file = async (req, res) => {
   const { url } = req.body;
   if (url.includes('soundcloud.com/')) {
-    const trackInfo = await downloadSingleFile(url);
+    const trackInfo = await scdl.getInfo(url);
     res.status(202).send(trackInfo);
   } else {
     res.status(404).json({

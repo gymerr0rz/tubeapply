@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import logo from '../assets/logo.png';
-import { ChooseSite, HomeContainer, InputBox, Logo } from './Home.styled';
+import {
+  ChooseSite,
+  HomeContainer,
+  InputBox,
+  Logo,
+  Loader,
+  LoaderContainer,
+} from './Home.styled';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,6 +17,7 @@ const Home = () => {
   const [button, setButton] = useState('');
   const [placeholder, setPlaceholder] = useState('Select a button...');
   const [trackData, setTrackData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const handleButtonClick = (e) => {
     const target = e.currentTarget;
@@ -32,6 +40,7 @@ const Home = () => {
       toast.error('Select a button...');
     } else {
       const url = document.querySelector('.inputURL').value;
+      setLoading(true);
       url
         ? axios
             .post(
@@ -40,8 +49,14 @@ const Home = () => {
                 url,
               }
             )
-            .then((response) => setTrackData(response.data))
-            .catch((err) => toast.error(err.response.data.message))
+            .then((response) => {
+              setTrackData(response.data);
+              setLoading(false);
+            })
+            .catch((err) => {
+              toast.error(err.response.data.message);
+              setLoading(false);
+            })
         : toast.error('Link the video/song.');
     }
   };
@@ -54,8 +69,16 @@ const Home = () => {
         <p>Download music and videos from youtube and soundcloud.</p>
         <InputBox>
           <input type="text" placeholder={placeholder} className="inputURL" />
-          <button onClick={handleSubmit}>
-            <i class="fa fa-cloud-upload"></i>
+          <button onClick={handleSubmit} disabled={loading}>
+            {!loading ? (
+              <LoaderContainer>
+                <i class="fa fa-cloud-upload"></i>
+              </LoaderContainer>
+            ) : (
+              <LoaderContainer>
+                <Loader></Loader>
+              </LoaderContainer>
+            )}
           </button>
         </InputBox>
         <ChooseSite className="buttonDiv">
