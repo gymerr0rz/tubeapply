@@ -45,6 +45,8 @@ const PlaylistPage = () => {
       toast.error('Select a button...');
     } else {
       const url = document.querySelector('.inputURL').value;
+      const playlistID = url.split('list')[2];
+      console.log(playlistID);
       setLoading(true);
       if (url) {
         axios
@@ -52,11 +54,16 @@ const PlaylistPage = () => {
             `http://localhost:4000/${button.toLowerCase()}/getPlaylistInfo`,
             {
               url,
+              playlistID,
             }
           )
           .then((response) => {
             setPlaylistUrl(url);
-            setTrackData(response.data[0].tracks);
+            button.toLowerCase() === 'soundcloud'
+              ? setTrackData(response.data[0].tracks)
+              : setTrackData(response.data.items);
+
+            console.log(trackData);
             setLoading(false);
           })
           .catch((err) => {
@@ -80,7 +87,7 @@ const PlaylistPage = () => {
 
     await axios
       .get(
-        `http://localhost:4000/soundcloud/downloadPlaylist?u=${user}&p=${playlist}`,
+        `http://localhost:4000/${button.toLowerCase()}/downloadPlaylist?u=${user}&p=${playlist}`,
         { responseType: 'blob' } // Set the response type to 'blob' to receive a binary file
       )
       .then((response) => {

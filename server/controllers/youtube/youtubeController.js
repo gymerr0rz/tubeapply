@@ -1,5 +1,6 @@
 import { removeEmojis } from '../../utils/removeEmoji.js';
 import ytdl from 'ytdl-core';
+import ytpl from 'ytpl';
 
 async function getURLInformation(url) {
   const render = await ytdl.getBasicInfo(url);
@@ -34,28 +35,37 @@ const download_sound = async (req, res) => {
 
 // Get Youtube URL Information
 const get_url_information = async (req, res) => {
-  const { url } = req.body;
-  if (url.includes('youtube.com/watch?')) {
-    const soundInfo = await getURLInformation(url);
-    res.send(soundInfo);
-  } else {
-    res.status(404).json({
-      status: 'failed',
-      message: 'Please select the right button or change the source link.',
-    });
+  try {
+    const { url } = req.body;
+    if (url.includes('youtube.com/watch?')) {
+      const soundInfo = await getURLInformation(url);
+      res.send(soundInfo);
+    } else {
+      res.status(404).json({
+        status: 'failed',
+        message: 'Please select the right button or change the source link.',
+      });
+    }
+  } catch (err) {
+    console.log(err);
   }
 };
 
 const youtube_playlist_info = async (req, res) => {
-  const { url } = req.body;
-  if (url.includes('youtube.com/watch?')) {
-    const soundInfo = await getURLInformation(url);
-    res.send(soundInfo);
-  } else {
-    res.status(404).json({
-      status: 'failed',
-      message: 'Please select the right button or change the source link.',
-    });
+  try {
+    const { url, playlistID } = req.body;
+    if (url.includes('youtube.com/playlist?')) {
+      console.log(playlistID.split('=').join(''));
+      const playlistInfo = await ytpl(playlistID.split('=').join(''));
+      res.send(playlistInfo);
+    } else {
+      res.status(404).json({
+        status: 'failed',
+        message: 'Please select the right button or change the source link.',
+      });
+    }
+  } catch (err) {
+    console.log(err);
   }
 };
 
