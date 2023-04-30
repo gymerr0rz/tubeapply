@@ -105,6 +105,33 @@ const PlaylistPage = () => {
       });
   };
 
+  const downloadPlaylistYT = async () => {
+    if (!playlistUrl) return;
+
+    const videoID = playlistUrl.split('list=')[1];
+    console.log(videoID);
+    setDownloadingStatus(true);
+
+    await axios
+      .get(
+        `http://localhost:4000/${button.toLowerCase()}/downloadPlaylist?v=${videoID}`,
+        { responseType: 'blob' } // Set the response type to 'blob' to receive a binary file
+      )
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${'playlist'}.zip`);
+        document.body.appendChild(link);
+        link.click();
+        setDownloadingStatus(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setDownloadingStatus(false);
+      });
+  };
+
   return (
     <>
       <Navbar link="/" linkName="Download Song" />
@@ -151,7 +178,15 @@ const PlaylistPage = () => {
         {trackData.length !== 0 &&
         trackData.length > 1 &&
         !downloadingStatus ? (
-          <DownloadBtn onClick={downloadPlaylist}>DOWNLOAD ALL</DownloadBtn>
+          <DownloadBtn
+            onClick={
+              button.toLowerCase() === 'soundcloud'
+                ? downloadPlaylist
+                : downloadPlaylistYT
+            }
+          >
+            DOWNLOAD ALL
+          </DownloadBtn>
         ) : null}
 
         {downloadingStatus ? <div class="custom-loader"></div> : null}

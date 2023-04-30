@@ -1,6 +1,44 @@
+import JSZip from 'jszip';
+import streamToArray from 'stream-to-array';
 import { removeEmojis } from '../../utils/removeEmoji.js';
 import ytdl from 'ytdl-core';
 import ytpl from 'ytpl';
+
+/*   const zip = new JSZip();
+  await scdl.downloadPlaylist(url).then(async (stream) => {
+    let count = 0;
+    for (const song of stream[0]) {
+      const array = await streamToArray(song);
+      zip.file(`${count++}.mp3`, Buffer.concat(array));
+    }
+  });
+  const content = await zip.generateAsync({ type: 'nodebuffer' });
+  return content;
+  
+*/
+async function downloadPlaylistTracks(url) {
+  const zip = new JSZip();
+  const tracks = await ytpl(url);
+  let count = 1;
+  for (const song of tracks.items) {
+    try {
+      const songBuffers = ytdl(song.id, {
+        filter: 'audioonly',
+      });
+      console.log(
+        `Downloaded ${count++} of ${tracks.items.length} : ${song.title} `
+      );
+      const array = await streamToArray(songBuffers);
+      const modifiedTitle = song.title.split('/').join('');
+      zip.file(`${modifiedTitle}.mp3`, Buffer.concat(array));
+    } catch (err) {
+      console.log(`Error downloading song ${song.title}: ${err.message}`);
+    }
+  }
+
+  const content = await zip.generateAsync({ type: 'nodebuffer' });
+  return content;
+}
 
 async function getURLInformation(url) {
   const render = await ytdl.getBasicInfo(url);
@@ -55,7 +93,6 @@ const youtube_playlist_info = async (req, res) => {
   try {
     const { url, playlistID } = req.body;
     if (url.includes('youtube.com/playlist?')) {
-      console.log(playlistID.split('=').join(''));
       const playlistInfo = await ytpl(playlistID.split('=').join(''));
       res.send(playlistInfo);
     } else {
@@ -69,4 +106,25 @@ const youtube_playlist_info = async (req, res) => {
   }
 };
 
-export { youtube_playlist_info, get_url_information, download_sound };
+const youtube_download_playlist = async (req, res) => {
+  try {
+    const queryPlaylist = req.query.v;
+    const downloadZip = await downloadPlaylistTracks(queryPlaylist);
+
+    res.set({
+      'Content-Type': 'application/zip',
+      'Content-Disposition': 'attachment; filename=playlist.zip',
+    });
+
+    res.send(downloadZip);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export {
+  youtube_playlist_info,
+  get_url_information,
+  download_sound,
+  youtube_download_playlist,
+};
