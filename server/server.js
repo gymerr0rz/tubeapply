@@ -5,10 +5,9 @@ import youtubeRoute from './routes/youtube/youtube.js';
 import soundcloudRoute from './routes/soundcloud/soundcloud.js';
 import cors from 'cors';
 
-app.use(express.static('public'));
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://dynamic-scone-61b6b0.netlify.app',
+  'https://luminous-baklava-b13631.netlify.app',
 ];
 
 app.use(
