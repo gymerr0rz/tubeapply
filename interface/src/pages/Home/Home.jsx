@@ -13,6 +13,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import VideoContainer from '../../components/VideoContainer/VideoContainer';
 import Navbar from '../../components/Navbar/Navbar';
+import SERVER_URL from '../../config/config';
 
 const Home = () => {
   const [button, setButton] = useState('');
@@ -44,7 +45,7 @@ const Home = () => {
       setLoading(true);
       if (url) {
         axios
-          .post(`http://localhost:4000/${button.toLowerCase()}/getSingleFile`, {
+          .post(`${SERVER_URL}/${button.toLowerCase()}/getSingleFile`, {
             url,
           })
           .then((response) => {

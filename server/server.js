@@ -6,7 +6,16 @@ import soundcloudRoute from './routes/soundcloud/soundcloud.js';
 import cors from 'cors';
 
 app.use(express.static('public'));
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://dynamic-scone-61b6b0.netlify.app',
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+  })
+);
 app.use(
   express.urlencoded({
     extended: true,

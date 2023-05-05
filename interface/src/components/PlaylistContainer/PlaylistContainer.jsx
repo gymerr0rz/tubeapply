@@ -1,6 +1,7 @@
 import { VideoBox, Download } from './PlaylistContainer.styled';
 import { Headphones } from 'lucide-react';
 import axios from 'axios';
+import SERVER_URL from '../../config/config';
 
 const PlaylistContainer = (props) => {
   const handleSCDownload = () => {
@@ -8,9 +9,9 @@ const PlaylistContainer = (props) => {
 
     axios
       .get(
-        `http://localhost:4000/soundcloud/downloadSong?s=${
-          props.data.permalink
-        }&u=${permalink.split('/')[3]}`,
+        `${SERVER_URL}/soundcloud/downloadSong?s=${props.data.permalink}&u=${
+          permalink.split('/')[3]
+        }`,
         { responseType: 'blob' }
       )
       .then((response) => {
@@ -29,7 +30,7 @@ const PlaylistContainer = (props) => {
     console.log(props.data);
     axios
       .get(
-        `http://localhost:4000/youtube/downloadSound?v=${videoID}`,
+        `${SERVER_URL}/youtube/downloadSound?v=${videoID}`,
         { responseType: 'blob' } // Set the response type to 'blob' to receive a binary file
       )
       .then((response) => {

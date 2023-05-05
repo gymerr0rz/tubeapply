@@ -15,6 +15,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import PlaylistContainer from '../../components/PlaylistContainer/PlaylistContainer';
 import { VideoContainer } from '../../components/PlaylistContainer/PlaylistContainer.styled';
+import SERVER_URL from '../../config/config';
 
 const PlaylistPage = () => {
   const [button, setButton] = useState('');
@@ -50,13 +51,10 @@ const PlaylistPage = () => {
       setLoading(true);
       if (url) {
         axios
-          .post(
-            `http://localhost:4000/${button.toLowerCase()}/getPlaylistInfo`,
-            {
-              url,
-              playlistID,
-            }
-          )
+          .post(`${SERVER_URL}/${button.toLowerCase()}/getPlaylistInfo`, {
+            url,
+            playlistID,
+          })
           .then((response) => {
             setPlaylistUrl(url);
             button.toLowerCase() === 'soundcloud'
@@ -87,7 +85,7 @@ const PlaylistPage = () => {
 
     await axios
       .get(
-        `http://localhost:4000/${button.toLowerCase()}/downloadPlaylist?u=${user}&p=${playlist}`,
+        `${SERVER_URL}/${button.toLowerCase()}/downloadPlaylist?u=${user}&p=${playlist}`,
         { responseType: 'blob' } // Set the response type to 'blob' to receive a binary file
       )
       .then((response) => {
@@ -114,7 +112,7 @@ const PlaylistPage = () => {
 
     await axios
       .get(
-        `http://localhost:4000/${button.toLowerCase()}/downloadPlaylist?v=${videoID}`,
+        `${SERVER_URL}/${button.toLowerCase()}/downloadPlaylist?v=${videoID}`,
         { responseType: 'blob' } // Set the response type to 'blob' to receive a binary file
       )
       .then((response) => {

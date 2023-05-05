@@ -1,6 +1,7 @@
 import { VideoBox, FileImage, Download } from './VideoContainer.styled';
 import { Headphones } from 'lucide-react';
 import axios from 'axios';
+import SERVER_URL from '../../config/config';
 
 const VideoContainer = ({ ...props }) => {
   console.log(props.data);
@@ -12,7 +13,7 @@ const VideoContainer = ({ ...props }) => {
     const song = props.data.permalink;
     axios
       .get(
-        `http://localhost:4000/soundcloud/downloadSong?u=${user}&s=${song}`,
+        `${SERVER_URL}/soundcloud/downloadSong?u=${user}&s=${song}`,
         { responseType: 'blob' } // Set the response type to 'blob' to receive a binary file
       )
       .then((response) => {
@@ -29,7 +30,7 @@ const VideoContainer = ({ ...props }) => {
     const videoID = props.data.videoId;
     axios
       .get(
-        `http://localhost:4000/youtube/downloadSound?v=${videoID}`,
+        `${SERVER_URL}/youtube/downloadSound?v=${videoID}`,
         { responseType: 'blob' } // Set the response type to 'blob' to receive a binary file
       )
       .then((response) => {
