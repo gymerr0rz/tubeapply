@@ -20,7 +20,7 @@ async function downloadPlaylistTracks(url) {
   try {
     const zip = new JSZip();
     const tracks = await ytpl(url, {
-      limit: 100,
+      limit: 999,
     });
     let count = 1;
     for (const song of tracks.items) {

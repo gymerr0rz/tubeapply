@@ -4,16 +4,23 @@ import scdwl from 'soundcloud-downloader';
 
 const scdl = scdwl.default;
 
-async function downloadPlaylistTracks(url, res) {
+async function downloadPlaylistTracks(url) {
   try {
+    const setInfo = await scdl.getSetInfo(url);
+    const linksArr = [];
+
+    setInfo.tracks.forEach((track) => linksArr.push(track));
+
     const zip = new JSZip();
-    await scdl.downloadPlaylist(url).then(async (stream) => {
-      let count = 0;
-      for (const song of stream[0]) {
-        const array = await streamToArray(song);
-        zip.file(`${count++}.mp3`, Buffer.concat(array));
-      }
-    });
+
+    for (const song of linksArr) {
+      const songBuffer = await scdl.download(song.permalink_url);
+      const array = await streamToArray(songBuffer);
+      const modifiedTitle = song.title.split('/').join('');
+      console.log(`Downloaded: ${song.title}`);
+      zip.file(`${modifiedTitle}.mp3`, Buffer.concat(array));
+    }
+
     const content = await zip.generateAsync({ type: 'nodebuffer' });
     return content;
   } catch (err) {
@@ -85,12 +92,14 @@ const download_playlist = async (req, res) => {
   try {
     const queryUser = req.query.u;
     const queryPlaylist = req.query.p;
+
     const url = `https://soundcloud.com/${queryUser}/sets/${queryPlaylist}`;
+
+    const downloadZip = await downloadPlaylistTracks(url);
     res.set({
       'Content-Type': 'application/zip',
       'Content-Disposition': 'attachment; filename=playlist.zip',
     });
-    const downloadZip = await downloadPlaylistTracks(url, res);
     res.send(downloadZip);
   } catch (err) {
     console.log(err);
