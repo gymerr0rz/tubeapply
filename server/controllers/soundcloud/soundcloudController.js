@@ -5,20 +5,20 @@ import scdwl from 'soundcloud-downloader';
 const scdl = scdwl.default;
 
 async function downloadPlaylistTracks(url, res) {
-  const zip = new JSZip();
-  await scdl.downloadPlaylist(url).then(async (stream) => {
-    let count = 0;
-    for (const song of stream[0]) {
-      try {
+  try {
+    const zip = new JSZip();
+    await scdl.downloadPlaylist(url).then(async (stream) => {
+      let count = 0;
+      for (const song of stream[0]) {
         const array = await streamToArray(song);
         zip.file(`${count++}.mp3`, Buffer.concat(array));
-      } catch (err) {
-        console.log('Failed downloading song.');
       }
-    }
-  });
-  const content = await zip.generateAsync({ type: 'nodebuffer' });
-  return content;
+    });
+    const content = await zip.generateAsync({ type: 'nodebuffer' });
+    return content;
+  } catch (err) {
+    console.log('Failed downloading song.');
+  }
 }
 
 async function getPlaylistInfo(url) {
