@@ -22,17 +22,25 @@ async function downloadPlaylistTracks(url, res) {
 }
 
 async function getPlaylistInfo(url) {
-  const playlistInfo = [];
-  await scdl.getSetInfo(url).then((stream) => {
-    playlistInfo.push(stream);
-  });
-  return playlistInfo;
+  try {
+    const playlistInfo = [];
+    await scdl.getSetInfo(url).then((stream) => {
+      playlistInfo.push(stream);
+    });
+    return playlistInfo;
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function downloadSong(url, res) {
-  await scdl.download(url).then((stream) => {
-    stream.pipe(res);
-  });
+  try {
+    await scdl.download(url).then((stream) => {
+      stream.pipe(res);
+    });
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 const get_single_file = async (req, res) => {

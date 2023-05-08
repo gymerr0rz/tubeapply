@@ -17,13 +17,13 @@ import ytpl from 'ytpl';
   
 */
 async function downloadPlaylistTracks(url) {
-  const zip = new JSZip();
-  const tracks = await ytpl(url, {
-    limit: 100,
-  });
-  let count = 1;
-  for (const song of tracks.items) {
-    try {
+  try {
+    const zip = new JSZip();
+    const tracks = await ytpl(url, {
+      limit: 100,
+    });
+    let count = 1;
+    for (const song of tracks.items) {
       const songBuffers = ytdl(song.id, {
         filter: 'audioonly',
       });
@@ -33,13 +33,13 @@ async function downloadPlaylistTracks(url) {
       const array = await streamToArray(songBuffers);
       const modifiedTitle = song.title.split('/').join('');
       zip.file(`${modifiedTitle}.mp3`, Buffer.concat(array));
-    } catch (err) {
-      console.log(`Error downloading song ${song.title}: ${err.message}`);
     }
-  }
 
-  const content = await zip.generateAsync({ type: 'nodebuffer' });
-  return content;
+    const content = await zip.generateAsync({ type: 'nodebuffer' });
+    return content;
+  } catch (err) {
+    console.log(`Error downloading song ${song.title}: ${err.message}`);
+  }
 }
 
 async function getURLInformation(url) {

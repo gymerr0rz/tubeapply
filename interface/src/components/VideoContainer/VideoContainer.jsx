@@ -37,7 +37,7 @@ const VideoContainer = ({ ...props }) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', `${videoID}.mp3`);
+        link.setAttribute('download', `${props.data.title}.mp3`);
         document.body.appendChild(link);
         link.click();
       });

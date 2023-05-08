@@ -43,7 +43,7 @@ const PlaylistContainer = (props) => {
       });
   };
 
-  console.log(props.data.artwork_url);
+  console.log(props.data.artwork_url, props.data.bestThumbnail?.url);
   return (
     <VideoBox>
       <div
@@ -52,8 +52,9 @@ const PlaylistContainer = (props) => {
           backgroundImage: `url(${
             props.data.artwork_url
               ? props.data.artwork_url
-              : props.data.bestThumbnail.url
+              : props.data?.bestThumbnail?.url
           })`,
+          backgroundColor: '#f0f0f0',
         }}
       ></div>
       <h1>{props.data.title}</h1>
