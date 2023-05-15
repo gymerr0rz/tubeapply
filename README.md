@@ -1,4 +1,7 @@
 <!-- PROJECT LOGO -->
+
+### Song Downloader
+
 <br />
 <br />
 <div align="center">
@@ -7,6 +10,10 @@
   </a>
 </div>
 
+### Playlist Downloader
+
+<br />
+<br />
 <div align="center">
   <a href="https://github.com/gymerr0rz/fs-inkwell">
     <img src="interface/src/assets/playlist.png" alt="Playlist" >
