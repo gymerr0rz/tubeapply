@@ -4,8 +4,6 @@ import axios from 'axios';
 import SERVER_URL from '../../config/config';
 
 const VideoContainer = ({ ...props }) => {
-  console.log(props.data);
-
   const handleClickSoundcloud = () => {
     const permaLink = props.data.permalink_url;
     const user = permaLink.split('/')[3];

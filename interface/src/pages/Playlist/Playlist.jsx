@@ -65,7 +65,8 @@ const PlaylistPage = () => {
             setLoading(false);
           })
           .catch((err) => {
-            toast.error(err.response.data.message);
+            console.log(err);
+            toast.error('Error');
             setLoading(false);
           });
       } else {

@@ -24,21 +24,26 @@ async function downloadPlaylistTracks(url) {
     });
     let count = 1;
     for (const song of tracks.items) {
-      const songBuffers = ytdl(song.id, {
-        filter: 'audioonly',
-      });
-      console.log(
-        `Downloaded ${count++} of ${tracks.items.length} : ${song.title} `
-      );
-      const array = await streamToArray(songBuffers);
-      const modifiedTitle = song.title.split('/').join('');
-      zip.file(`${modifiedTitle}.mp3`, Buffer.concat(array));
+      try {
+        const songBuffers = ytdl(song.id, {
+          filter: 'audioonly',
+        });
+        console.log(
+          `Downloaded ${count++} of ${tracks.items.length} : ${song.title} `
+        );
+        const array = await streamToArray(songBuffers);
+        const modifiedTitle = song.title.split('/').join('');
+        zip.file(`${modifiedTitle}.mp3`, Buffer.concat(array));
+      } catch (err) {
+        console.log(`Error downloading song ${song.title}: ${err.message}`);
+      }
     }
 
     const content = await zip.generateAsync({ type: 'nodebuffer' });
+    console.log('Zipping file...');
     return content;
   } catch (err) {
-    console.log(`Error downloading song ${song.title}: ${err.message}`);
+    console.log(err);
   }
 }
 
@@ -118,6 +123,7 @@ const youtube_download_playlist = async (req, res) => {
       'Content-Disposition': 'attachment; filename=playlist.zip',
     });
 
+    console.log('Sending file to the user.');
     res.send(downloadZip);
   } catch (err) {
     console.log(err);
