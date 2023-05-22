@@ -26,7 +26,6 @@
 - Nodejs
 - Styled-Components
 - Express
-- Mongoose
 
 <!-- GETTING STARTED -->
 
