@@ -12,13 +12,22 @@ async function downloadPlaylistTracks(url) {
     setInfo.tracks.forEach((track) => linksArr.push(track));
 
     const zip = new JSZip();
-
+    let count = 1;
     for (const song of linksArr) {
-      const songBuffer = await scdl.download(song.permalink_url);
-      const array = await streamToArray(songBuffer);
-      const modifiedTitle = song.title.split('/').join('');
-      console.log(`Downloaded: ${song.title}`);
-      zip.file(`${modifiedTitle}.mp3`, Buffer.concat(array));
+      try {
+        const songBuffer = await scdl.download(song.permalink_url);
+        const array = await streamToArray(songBuffer);
+        const modifiedTitle = song.title
+          .split('/')
+          .join('')
+          .replace(/[^A-Za-z0-9 -()[]]/g, '-');
+        console.log(
+          `Downloaded ${count++} of ${linksArr.length}: ${song.title}`
+        );
+        zip.file(`${modifiedTitle}.mp3`, Buffer.concat(array));
+      } catch (err) {
+        console.log(`Failed Downloading Song: ${song.title}`);
+      }
     }
 
     const content = await zip.generateAsync({ type: 'nodebuffer' });

@@ -20,7 +20,7 @@ async function downloadPlaylistTracks(url) {
   try {
     const zip = new JSZip();
     const tracks = await ytpl(url, {
-      limit: 999,
+      limit: 100, // Set Download Limit
     });
     let count = 1;
     for (const song of tracks.items) {
@@ -32,7 +32,11 @@ async function downloadPlaylistTracks(url) {
           `Downloaded ${count++} of ${tracks.items.length} : ${song.title} `
         );
         const array = await streamToArray(songBuffers);
-        const modifiedTitle = song.title.split('/').join('');
+        const modifiedTitle = song.title
+          .split('/')
+          .join('')
+          .replace(/[^A-Za-z0-9- ]/g, '-');
+        console.log(modifiedTitle);
         zip.file(`${modifiedTitle}.mp3`, Buffer.concat(array));
       } catch (err) {
         console.log(`Error downloading song ${song.title}: ${err.message}`);
@@ -65,13 +69,18 @@ async function downloadMP3(url, res) {
 
 // Backend Point for Button Download MP3
 const download_sound = async (req, res) => {
-  const queryVideo = req.query.v;
-  const url = `https://www.youtube.com/watch?v=${queryVideo}`;
   try {
+    const queryVideo = req.query.v;
+    const url = `https://www.youtube.com/watch?v=${queryVideo}`;
     const videoInfo = await getURLInformation(url);
     const title = removeEmojis(videoInfo.title);
-    res.setHeader('Content-Type', 'video/mp4');
-    res.setHeader('Content-Disposition', `attachment; filename="${title}.mp3"`);
+    const modifiedTitle = title.replace(/[^A-Za-z0-9- ]/g, '-');
+    console.log(modifiedTitle);
+    res.setHeader('Content-Type', 'audio/mpeg');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${modifiedTitle}.mp3"`
+    );
     await downloadMP3(url, res);
   } catch (err) {
     console.log(err);
