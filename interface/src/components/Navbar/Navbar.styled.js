@@ -23,6 +23,7 @@ const NavbarContainer = styled.div`
   }
 
   a {
+    font-family: 'Karla';
     color: #fff;
     text-decoration: none;
     font-weight: 900;

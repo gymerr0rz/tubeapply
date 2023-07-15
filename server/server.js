@@ -6,7 +6,7 @@ import soundcloudRoute from './routes/soundcloud/soundcloud.js';
 import cors from 'cors';
 
 const allowedOrigins = [
-  'http://localhost:3000',
+  'http://localhost:5173',
   'https://luminous-baklava-b13631.netlify.app',
 ];
 
