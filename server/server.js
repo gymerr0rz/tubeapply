@@ -7,7 +7,7 @@ import cors from 'cors';
 
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://luminous-baklava-b13631.netlify.app',
+  'https://tubeapply.netlify.app',
 ];
 
 app.use(
